@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flipkart Product Review & Price Checker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #2874f0;
+            --primary-dark: #1a5bb8;
+            --positive: #4CAF50;
+            --negative: #f44336;
+            --warning: #FF9800;
+            --light-bg: #f5f7fa;
+            --card-bg: #ffffff;
+            --text: #333333;
+            --text-light: #666666;
+            --border: #e0e0e0;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo i {
+            font-size: 32px;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .url-input-section {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .url-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        .url-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(40, 116, 240, 0.2);
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        .product-display {
+            background: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .product-header {
+            display: flex;
+            gap: 25px;
+            margin-bottom: 20px;
+        }
+
+        .product-image {
+            width: 300px;
+            height: 300px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .product-details {
+            flex: 1;
+        }
+
+        .product-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            line-height: 1.3;
+        }
+
+        .product-brand {
+            color: var(--text-light);
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .product-rating {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .rating-badge {
+            background: var(--positive);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .rating-count {
+            color: var(--text-light);
+        }
+
+        .product-price {
+            margin: 20px 0;
+        }
+
+        .current-price {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .original-price {
+            font-size: 18px;
+            color: var(--text-light);
+            text-decoration: line-through;
+            margin-left: 10px;
+        }
+
+        .discount {
+            color: var(--positive);
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .product-features {
+            margin-top: 20px;
+        }
+
+        .features-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .features-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature i {
+            color: var(--positive);
+        }
+
+        .reviews-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .review-section {
+            background: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 15px 20px;
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .positive-reviews .section-header {
+            background-color: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .negative-reviews .section-header {
+            background-color: #FFEBEE;
+            color: #C62828;
+        }
+
+        .review-list {
+            padding: 0;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .review-item {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 15px;
+        }
+
+        .review-item:last-child {
+            border-bottom: none;
+        }
+
+        .reviewer-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .review-content {
+            flex: 1;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .reviewer-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .review-date {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .review-rating {
+            margin-bottom: 10px;
+        }
+
+        .stars {
+            color: #FFC107;
+        }
+
+        .review-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .review-text {
+            color: var(--text);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+
+        .loading-spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: var(--text-light);
+            font-size: 14px;
+            border-top: 1px solid var(--border);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 6px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: none;
+            z-index: 1000;
+        }
+
+        .notification.success {
+            background: var(--positive);
+        }
+
+        .notification.error {
+            background: var(--negative);
+        }
+
+        .sample-urls {
+            margin-top: 15px;
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .sample-url {
+            display: inline-block;
+            margin-right: 15px;
+            margin-bottom: 8px;
+            color: var(--primary);
+            text-decoration: none;
+            cursor: pointer;
+            border-bottom: 1px dashed var(--primary);
+        }
+
+        .sample-url:hover {
+            color: var(--primary-dark);
+        }
+
+        @media (max-width: 768px) {
+            .reviews-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .product-header {
+                flex-direction: column;
+            }
+            
+            .product-image {
+                width: 100%;
+                height: 250px;
+            }
+            
+            .features-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h1>Flipkart Product Review & Price Checker</h1>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="url-input-section">
+            <h2>Enter Flipkart Product URL</h2>
+            <p>Paste the URL of any Flipkart product to see its price, rating, and reviews</p>
+            <div class="input-group">
+                <input type="text" class="url-input" id="product-url" placeholder="https://www.flipkart.com/iphone-16-pro-max/p/itm..." value="">
+                <button class="btn" id="fetch-btn">
+                    <i class="fas fa-search"></i> Fetch Product Details
+                </button>
+            </div>
+            <div class="sample-urls">
+                <strong>Try these sample URLs:</strong><br>
+                <span class="sample-url" data-url="https://www.flipkart.com/apple-iphone-16-pro-max/p/itmabcdef123456">iPhone 16 Pro Max</span>
+                <span class="sample-url" data-url="https://www.flipkart.com/samsung-galaxy-s24-ultra/p/itmxyz789">Samsung Galaxy S24 Ultra</span>
+                <span class="sample-url" data-url="https://www.flipkart.com/oneplus-12/p/itmdef456">OnePlus 12</span>
+            </div>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <p>Fetching product details from Flipkart...</p>
+        </div>
+
+        <div class="product-display" id="product-display">
+            <div class="product-header">
+                <div class="product-image">
+                    <i class="fas fa-mobile-alt" id="product-icon"></i>
+                </div>
+                <div class="product-details">
+                    <h1 class="product-title" id="product-title">Apple iPhone 16 Pro Max (256 GB) - Natural Titanium</h1>
+                    <div class="product-brand" id="product-brand">Brand: Apple</div>
+                    <div class="product-rating">
+                        <div class="rating-badge">
+                            <i class="fas fa-star"></i>
+                            <span id="product-rating">4.7</span>
+                        </div>
+                        <div class="rating-count" id="rating-count">(2,348 Ratings & 1,897 Reviews)</div>
+                    </div>
+                    <div class="product-price">
+                        <span class="current-price" id="current-price">₹1,39,999</span>
+                        <span class="original-price" id="original-price">₹1,49,900</span>
+                        <span class="discount" id="discount">6% off</span>
+                    </div>
+                    <div class="product-features">
+                        <div class="features-title">Key Features:</div>
+                        <div class="features-list" id="features-list">
+                            <!-- Features will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="reviews-container">
+            <!-- Positive Reviews Section -->
+            <div class="review-section positive-reviews">
+                <div class="section-header">
+                    <i class="fas fa-thumbs-up"></i>
+                    Top 10 Positive Reviews
+                </div>
+                <div class="review-list" id="positive-reviews">
+                    <!-- Positive reviews will be inserted here by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Negative Reviews Section -->
+            <div class="review-section negative-reviews">
+                <div class="section-header">
+                    <i class="fas fa-thumbs-down"></i>
+                    Top 10 Negative Reviews
+                </div>
+                <div class="review-list" id="negative-reviews">
+                    <!-- Negative reviews will be inserted here by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>Disclaimer: This is a demo website. Product data and reviews are simulated for demonstration purposes only.</p>
+            <p>Created for educational purposes - not affiliated with Flipkart.</p>
+        </div>
+    </footer>
+
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // DOM Elements
+        const productUrlInput = document.getElementById('product-url');
+        const fetchBtn = document.getElementById('fetch-btn');
+        const loadingElement = document.getElementById('loading');
+        const productDisplay = document.getElementById('product-display');
+        const productTitle = document.getElementById('product-title');
+        const productBrand = document.getElementById('product-brand');
+        const productRating = document.getElementById('product-rating');
+        const ratingCount = document.getElementById('rating-count');
+        const currentPrice = document.getElementById('current-price');
+        const originalPrice = document.getElementById('original-price');
+        const discount = document.getElementById('discount');
+        const featuresList = document.getElementById('features-list');
+        const positiveReviewsContainer = document.getElementById('positive-reviews');
+        const negativeReviewsContainer = document.getElementById('negative-reviews');
+        const notification = document.getElementById('notification');
+        const productIcon = document.getElementById('product-icon');
+        const sampleUrls = document.querySelectorAll('.sample-url');
+
+        // Mock product data
+        const mockProducts = {
+            "iphone-16-pro-max": {
+                title: "Apple iPhone 16 Pro Max (256 GB) - Natural Titanium",
+                brand: "Brand: Apple",
+                rating: 4.7,
+                ratingCount: "2,348 Ratings & 1,897 Reviews",
+                currentPrice: "₹1,39,999",
+                originalPrice: "₹1,49,900",
+                discount: "6% off",
+                icon: "fas fa-mobile-alt",
+                features: [
+                    "6.9-inch Super Retina XDR display",
+                    "A18 Pro chip with 6-core CPU",
+                    "Pro camera system (48MP + 12MP + 12MP)",
+                    "Face ID facial recognition",
+                    "5G capable with eSIM support",
+                    "Titanium design with ceramic shield",
+                    "Up to 29 hours video playback"
+                ],
+                positiveReviews: [
+                    {
+                        name: "Rahul Sharma",
+                        date: "15 Nov 2023",
+                        rating: 5,
+                        title: "Excellent phone with outstanding camera",
+                        text: "The camera quality is mind-blowing. Night mode works perfectly even in very low light. Battery life easily lasts a full day with heavy usage."
+                    },
+                    {
+                        name: "Priya Patel",
+                        date: "12 Nov 2023",
+                        rating: 5,
+                        title: "Worth every penny!",
+                        text: "The 120Hz display is buttery smooth. Performance is top-notch with no lag whatsoever. Face ID is faster than previous models."
+                    },
+                    {
+                        name: "Amit Kumar",
+                        date: "10 Nov 2023",
+                        rating: 5,
+                        title: "Best iPhone ever made",
+                        text: "The titanium build feels premium and lightweight. The action button is surprisingly useful. iOS 18 runs flawlessly on this device."
+                    },
+                    {
+                        name: "Neha Gupta",
+                        date: "8 Nov 2023",
+                        rating: 5,
+                        title: "Camera is revolutionary",
+                        text: "The 5x optical zoom produces stunning photos. Video stabilization is incredible - feels like using a professional gimbal."
+                    },
+                    {
+                        name: "Vikram Singh",
+                        date: "5 Nov 2023",
+                        rating: 5,
+                        title: "Battery life is exceptional",
+                        text: "I'm a heavy user and still have 30% battery left at the end of the day. Fast charging works great with the 35W adapter."
+                    },
+                    {
+                        name: "Anjali Desai",
+                        date: "3 Nov 2023",
+                        rating: 4,
+                        title: "Almost perfect smartphone",
+                        text: "Love the always-on display and dynamic island. The USB-C port is a welcome change. Only wish it had faster charging."
+                    },
+                    {
+                        name: "Sanjay Mehta",
+                        date: "1 Nov 2023",
+                        rating: 5,
+                        title: "Performance beast",
+                        text: "A17 Pro chip handles everything I throw at it. Gaming performance is exceptional with console-quality graphics."
+                    },
+                    {
+                        name: "Pooja Reddy",
+                        date: "29 Oct 2023",
+                        rating: 5,
+                        title: "Display is absolutely stunning",
+                        text: "The Super Retina XDR display is vibrant and bright outdoors. True Tone works perfectly for comfortable viewing."
+                    },
+                    {
+                        name: "Rajesh Iyer",
+                        date: "27 Oct 2023",
+                        rating: 4,
+                        title: "Great upgrade from iPhone 13",
+                        text: "Noticeable improvements in camera, battery life, and performance. The titanium frame makes it lighter than expected."
+                    },
+                    {
+                        name: "Sneha Joshi",
+                        date: "25 Oct 2023",
+                        rating: 5,
+                        title: "Excellent build quality",
+                        text: "The matte finish on the titanium looks elegant and doesn't attract fingerprints. Feels very durable and premium."
+                    }
+                ],
+                negativeReviews: [
+                    {
+                        name: "Arun Malhotra",
+                        date: "14 Nov 2023",
+                        rating: 1,
+                        title: "Overpriced with heating issues",
+                        text: "Phone heats up significantly during video calls and gaming. Not worth the premium price tag. Very disappointed."
+                    },
+                    {
+                        name: "Kavita Nair",
+                        date: "11 Nov 2023",
+                        rating: 2,
+                        title: "Battery drains quickly",
+                        text: "Battery life is not as advertised. Drains quickly with normal usage. Have to charge twice a day with moderate use."
+                    },
+                    {
+                        name: "Deepak Verma",
+                        date: "9 Nov 2023",
+                        rating: 2,
+                        title: "Software bugs and glitches",
+                        text: "Facing multiple software issues. Apps crash randomly and the phone freezes occasionally. Expected better from Apple."
+                    },
+                    {
+                        name: "Meera Choudhary",
+                        date: "7 Nov 2023",
+                        rating: 1,
+                        title: "Camera not up to mark",
+                        text: "Photos appear overprocessed with artificial sharpening. Low light performance is mediocre compared to competitors."
+                    },
+                    {
+                        name: "Rohit Banerjee",
+                        date: "4 Nov 2023",
+                        rating: 2,
+                        title: "Heavy and uncomfortable",
+                        text: "Despite titanium build, the phone is still heavy and uncomfortable for one-handed use. Slippery without a case."
+                    },
+                    {
+                        name: "Swati Kapoor",
+                        date: "2 Nov 2023",
+                        rating: 1,
+                        title: "Face ID recognition issues",
+                        text: "Face ID fails to recognize me with sunglasses or in low light. Much less reliable than Touch ID."
+                    },
+                    {
+                        name: "Nitin Agarwal",
+                        date: "31 Oct 2023",
+                        rating: 2,
+                        title: "Not enough innovation",
+                        text: "Very minor upgrades from previous model. Same design with minimal changes. Not worth upgrading from iPhone 15 Pro."
+                    },
+                    {
+                        name: "Divya Menon",
+                        date: "28 Oct 2023",
+                        rating: 1,
+                        title: "Poor customer service",
+                        text: "Facing network connectivity issues but customer service was unhelpful. No proper solution provided."
+                    },
+                    {
+                        name: "Anil Rao",
+                        date: "26 Oct 2023",
+                        rating: 2,
+                        title: "Display has color shift",
+                        text: "Noticeable color shift when viewing from angles. Not what I expected from a premium device."
+                    },
+                    {
+                        name: "Shalini Bhat",
+                        date: "24 Oct 2023",
+                        rating: 1,
+                        title: "Charging port issues",
+                        text: "USB-C port is loose and cables disconnect easily. Have to replace the device due to charging problems."
+                    }
+                ]
+            },
+            "samsung-galaxy-s24-ultra": {
+                title: "Samsung Galaxy S24 Ultra (512 GB) - Titanium Gray",
+                brand: "Brand: Samsung",
+                rating: 4.5,
+                ratingCount: "1,842 Ratings & 1,523 Reviews",
+                currentPrice: "₹1,24,999",
+                originalPrice: "₹1,34,999",
+                discount: "7% off",
+                icon: "fas fa-mobile-alt",
+                features: [
+                    "6.8-inch Dynamic AMOLED 2X Display",
+                    "Snapdragon 8 Gen 3 Processor",
+                    "200MP Quad Camera System",
+                    "S Pen included with silo",
+                    "5000mAh battery with 45W charging",
+                    "Titanium frame with Gorilla Glass",
+                    "7 years of OS updates guaranteed"
+                ],
+                positiveReviews: [
+                    {
+                        name: "Rohit Kumar",
+                        date: "14 Nov 2023",
+                        rating: 5,
+                        title: "Incredible display and performance",
+                        text: "The screen is absolutely stunning with vibrant colors. Performance is blazing fast for all tasks including gaming."
+                    },
+                    {
+                        name: "Anita Deshmukh",
+                        date: "12 Nov 2023",
+                        rating: 5,
+                        title: "S Pen is a game changer",
+                        text: "The included S Pen is incredibly useful for notes and creative work. Camera quality is exceptional in all conditions."
+                    },
+                    {
+                        name: "Vikram Joshi",
+                        date: "10 Nov 2023",
+                        rating: 4,
+                        title: "Excellent battery life",
+                        text: "Battery easily lasts all day with heavy use. The titanium build feels premium and durable. Software is smooth."
+                    }
+                ],
+                negativeReviews: [
+                    {
+                        name: "Priya Nair",
+                        date: "13 Nov 2023",
+                        rating: 2,
+                        title: "Too big and heavy",
+                        text: "The phone is uncomfortably large for one-handed use. Weight distribution feels uneven making it tiring to hold."
+                    },
+                    {
+                        name: "Raj Malhotra",
+                        date: "11 Nov 2023",
+                        rating: 1,
+                        title: "Overheating issues",
+                        text: "Phone gets very hot during video recording and gaming. Performance throttles significantly when temperature rises."
+                    }
+                ]
+            },
+            "oneplus-12": {
+                title: "OnePlus 12 (256 GB) - Silky Black",
+                brand: "Brand: OnePlus",
+                rating: 4.3,
+                ratingCount: "1,235 Ratings & 987 Reviews",
+                currentPrice: "₹69,999",
+                originalPrice: "₹74,999",
+                discount: "6% off",
+                icon: "fas fa-mobile-alt",
+                features: [
+                    "6.7-inch Fluid AMOLED Display",
+                    "Snapdragon 8 Gen 3 Processor",
+                    "Triple Camera with Hasselblad",
+                    "100W SuperVOOC charging",
+                    "Alert Slider makes a return",
+                    "OxygenOS based on Android 14",
+                    "IP65 water and dust resistance"
+                ],
+                positiveReviews: [
+                    {
+                        name: "Amit Singh",
+                        date: "15 Nov 2023",
+                        rating: 5,
+                        title: "Blazing fast charging",
+                        text: "100W charging is incredible - goes from 0 to 100% in just 25 minutes. Performance is smooth with no lag."
+                    },
+                    {
+                        name: "Neha Reddy",
+                        date: "13 Nov 2023",
+                        rating: 4,
+                        title: "Excellent value for money",
+                        text: "Premium features at a much lower price than competitors. Camera quality is impressive especially in low light."
+                    }
+                ],
+                negativeReviews: [
+                    {
+                        name: "Sanjay Verma",
+                        date: "14 Nov 2023",
+                        rating: 2,
+                        title: "Software bugs",
+                        text: "Facing several software glitches and app crashes. OxygenOS not as polished as previous versions."
+                    }
+                ]
+            }
+        };
+
+        // Function to show notification
+        function showNotification(message, type) {
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // Function to generate star rating HTML
+        function generateStars(rating) {
+            let stars = '';
+            for (let i = 0; i < 5; i++) {
+                if (i < rating) {
+                    stars += '<i class="fas fa-star"></i>';
+                } else {
+                    stars += '<i class="far fa-star"></i>';
+                }
+            }
+            return stars;
+        }
+
+        // Function to get initials from name
+        function getInitials(name) {
+            return name.split(' ').map(word => word[0]).join('').toUpperCase();
+        }
+
+        // Function to render product details
+        function renderProductDetails(product) {
+            productTitle.textContent = product.title;
+            productBrand.textContent = product.brand;
+            productRating.textContent = product.rating;
+            ratingCount.textContent = product.ratingCount;
+            currentPrice.textContent = product.currentPrice;
+            originalPrice.textContent = product.originalPrice;
+            discount.textContent = product.discount;
+            productIcon.className = product.icon;
+            
+            // Render features
+            featuresList.innerHTML = '';
+            product.features.forEach(feature => {
+                const featureElement = document.createElement('div');
+                featureElement.className = 'feature';
+                featureElement.innerHTML = `<i class="fas fa-check"></i> <span>${feature}</span>`;
+                featuresList.appendChild(featureElement);
+            });
+            
+            // Render reviews
+            renderReviews(product.positiveReviews, product.negativeReviews);
+            
+            // Show product display
+            productDisplay.style.display = 'block';
+        }
+
+        // Function to render reviews
+        function renderReviews(positiveReviews, negativeReviews) {
+            // Clear existing reviews
+            positiveReviewsContainer.innerHTML = '';
+            negativeReviewsContainer.innerHTML = '';
+
+            // Render positive reviews
+            positiveReviews.forEach(review => {
+                const reviewElement = document.createElement('div');
+                reviewElement.className = 'review-item';
+                reviewElement.innerHTML = `
+                    <div class="reviewer-avatar">${getInitials(review.name)}</div>
+                    <div class="review-content">
+                        <div class="review-header">
+                            <div class="reviewer-name">${review.name}</div>
+                            <div class="review-date">${review.date}</div>
+                        </div>
+                        <div class="review-rating">
+                            <div class="stars">${generateStars(review.rating)}</div>
+                        </div>
+                        <div class="review-title">${review.title}</div>
+                        <div class="review-text">${review.text}</div>
+                    </div>
+                `;
+                positiveReviewsContainer.appendChild(reviewElement);
+            });
+
+            // Render negative reviews
+            negativeReviews.forEach(review => {
+                const reviewElement = document.createElement('div');
+                reviewElement.className = 'review-item';
+                reviewElement.innerHTML = `
+                    <div class="reviewer-avatar">${getInitials(review.name)}</div>
+                    <div class="review-content">
+                        <div class="review-header">
+                            <div class="reviewer-name">${review.name}</div>
+                            <div class="review-date">${review.date}</div>
+                        </div>
+                        <div class="review-rating">
+                            <div class="stars">${generateStars(review.rating)}</div>
+                        </div>
+                        <div class="review-title">${review.title}</div>
+                        <div class="review-text">${review.text}</div>
+                    </div>
+                `;
+                negativeReviewsContainer.appendChild(reviewElement);
+            });
+        }
+
+        // Function to simulate fetching product data
+        function fetchProductData(url) {
+            // Show loading state
+            loadingElement.style.display = 'block';
+            productDisplay.style.display = 'none';
+            
+            // Simulate API call delay
+            setTimeout(() => {
+                let productFound = false;
+                
+                // Check which product matches the URL
+                if (url.includes('iphone-16-pro-max')) {
+                    renderProductDetails(mockProducts['iphone-16-pro-max']);
+                    productFound = true;
+                } else if (url.includes('samsung-galaxy-s24-ultra')) {
+                    renderProductDetails(mockProducts['samsung-galaxy-s24-ultra']);
+                    productFound = true;
+                } else if (url.includes('oneplus-12')) {
+                    renderProductDetails(mockProducts['oneplus-12']);
+                    productFound = true;
+                }
+                
+                if (productFound) {
+                    showNotification('Product details loaded successfully!', 'success');
+                } else {
+                    // Default to iPhone if no specific product found
+                    renderProductDetails(mockProducts['iphone-16-pro-max']);
+                    showNotification('Product not found. Showing iPhone 16 Pro Max as example.', 'error');
+                }
+                
+                // Hide loading
+                loadingElement.style.display = 'none';
+            }, 1500);
+        }
+
+        // Event listeners
+        fetchBtn.addEventListener('click', () => {
+            const url = productUrlInput.value.trim();
+            
+            if (!url) {
+                showNotification('Please enter a Flipkart product URL', 'error');
+                return;
+            }
+            
+            if (!url.includes('flipkart.com')) {
+                showNotification('Please enter a valid Flipkart URL', 'error');
+                return;
+            }
+            
+            fetchProductData(url);
+        });
+
+        // Add event listeners to sample URLs
+        sampleUrls.forEach(sampleUrl => {
+            sampleUrl.addEventListener('click', () => {
+                productUrlInput.value = sampleUrl.getAttribute('data-url');
+                fetchProductData(sampleUrl.getAttribute('data-url'));
+            });
+        });
+
+        // Initialize with iPhone data
+        window.addEventListener('DOMContentLoaded', () => {
+            productUrlInput.value = "https://www.flipkart.com/apple-iphone-16-pro-max/p/itmabcdef123456";
+            fetchProductData("https://www.flipkart.com/apple-iphone-16-pro-max/p/itmabcdef123456");
+        });
+    </script>
+</body>
+</html>
